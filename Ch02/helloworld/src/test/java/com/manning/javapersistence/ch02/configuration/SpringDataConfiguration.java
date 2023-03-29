@@ -38,8 +38,8 @@ public class SpringDataConfiguration {
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://localhost:3306/CH02?serverTimezone=UTC");
+        dataSource.setDriverClassName("org.h2.Driver");
+        dataSource.setUrl("jdbc:h2:mem:hello;DB_CLOSE_DELAY=-1");
         dataSource.setUsername("root");
         dataSource.setPassword("");
         return dataSource;
@@ -53,20 +53,20 @@ public class SpringDataConfiguration {
     @Bean
     public JpaVendorAdapter jpaVendorAdapter() {
         HibernateJpaVendorAdapter jpaVendorAdapter = new HibernateJpaVendorAdapter();
-        jpaVendorAdapter.setDatabase(Database.MYSQL);
+        jpaVendorAdapter.setDatabase(Database.H2);
         jpaVendorAdapter.setShowSql(true);
         return jpaVendorAdapter;
     }
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource, JpaVendorAdapter jpaVendorAdapter) {
         LocalContainerEntityManagerFactoryBean localContainerEntityManagerFactoryBean =
                 new LocalContainerEntityManagerFactoryBean();
-        localContainerEntityManagerFactoryBean.setDataSource(dataSource());
+        localContainerEntityManagerFactoryBean.setDataSource(dataSource);
         Properties properties = new Properties();
         properties.put("hibernate.hbm2ddl.auto", "create");
         localContainerEntityManagerFactoryBean.setJpaProperties(properties);
-        localContainerEntityManagerFactoryBean.setJpaVendorAdapter(jpaVendorAdapter());
+        localContainerEntityManagerFactoryBean.setJpaVendorAdapter(jpaVendorAdapter);
         localContainerEntityManagerFactoryBean.setPackagesToScan("com.manning.javapersistence.ch02");
         return localContainerEntityManagerFactoryBean;
     }
